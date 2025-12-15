@@ -1,37 +1,41 @@
-const EXCHANGE_API_URL = import.meta.env.VITE_EXCHANGERATE_API_URL
+const EXCHANGE_API_URL = import.meta.env.VITE_EXCHANGERATE_API_URL || 'https://api.exchangerate-api.com/v4'
 
-export const getExchangeRates = async (baseCurrency) => {
+export const getExchangeRates = async (baseCurrency = 'USD') => {
   try {
+    if (!baseCurrency || baseCurrency === 'N/A') {
+      throw new Error('Base currency is required')
+    }
+    
     const response = await fetch(`${EXCHANGE_API_URL}/latest/${baseCurrency}`)
     
     if (!response.ok) {
-      throw new Error('Failed to fetch exchange rates')
+      throw new Error(`Exchange rate API error: ${response.status}`)
     }
     
     const data = await response.json()
+    
+    if (!data.rates) {
+      throw new Error('Invalid exchange rate data received')
+    }
+    
     return {
       base: data.base,
       rates: data.rates,
       date: data.date
     }
   } catch (error) {
-    console.error('Error fetching exchange rates:', error)
-    return {
-      base: baseCurrency,
-      rates: {
-        USD: 1.0,
-        EUR: 0.85,
-        GBP: 0.73,
-        JPY: 110.0
-      },
-      date: new Date().toISOString().split('T')[0]
-    }
+    console.error('Error fetching exchange rates:', error.message)
+    throw error 
   }
 }
 
 export const convertCurrency = (amount, fromCurrency, toCurrency, rates) => {
-  if (!rates || !rates[fromCurrency] || !rates[toCurrency]) return null
+  if (!rates || !rates[fromCurrency] || !rates[toCurrency]) {
+    throw new Error('Invalid currency or rates data for conversion')
+  }
   
   const amountInBase = amount / rates[fromCurrency]
-  return amountInBase * rates[toCurrency]
+  const convertedAmount = amountInBase * rates[toCurrency]
+  
+  return parseFloat(convertedAmount.toFixed(2))
 }

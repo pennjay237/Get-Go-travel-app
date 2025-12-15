@@ -1,14 +1,29 @@
-export default function Navbar() {
-  return (
-    <nav className="w-full bg-white shadow-sm fixed top-0 left-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-blue-600">GetGo</h1>
+import { Link } from 'react-router-dom'
 
-        <div className="flex items-center gap-6 text-gray-600 font-medium">
-          <a href="/" className="hover:text-blue-600 transition">Home</a>
-          <a href="#features" className="hover:text-blue-600 transition">Features</a>
+const Navbar = () => {
+  return (
+    <nav className="bg-white shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center space-x-2">
+              <span className="text-2xl">✈️</span>
+              <span className="text-xl font-bold text-primary-600">GetGo</span>
+            </Link>
+          </div>
+          
+          <div className="flex items-center space-x-6">
+            <Link to="/" className="text-gray-700 hover:text-primary-600 font-medium">
+              Home
+            </Link>
+            <button className="btn-secondary text-sm">
+              Save Trip
+            </button>
+          </div>
         </div>
       </div>
     </nav>
-  );
+  )
 }
+
+export default Navbar
