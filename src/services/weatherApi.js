@@ -1,29 +1,19 @@
-import axios from "axios";
+// src/services/weatherApi.js
+const OPENWEATHER_API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
-const WEATHER_API_KEY = import.meta.env.VITE_OPENWEATHER_KEY;
-
-export const getWeatherByCity = async (cityName) => {
+export async function getWeatherByCity(cityName) {
+  if (!cityName) return null;
   try {
-    const response = await axios.get(
-      "https://api.openweathermap.org/data/2.5/weather",
-      {
-        params: {
-          q: cityName,
-          appid: WEATHER_API_KEY,
-          units: "metric",
-        },
-      }
+    const res = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+        cityName
+      )}&units=metric&appid=${OPENWEATHER_API_KEY}`
     );
-
-    const data = response.data;
-
-    return {
-      temperature: data.main.temp,
-      description: data.weather[0].description,
-      icon: `http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`,
-    };
-  } catch (error) {
-    console.error("Weather API error:", error);
-    return null;
+    if (!res.ok) throw new Error("Weather API request failed");
+    const data = await res.json();
+    return data; // data.main.temp, data.weather[0], etc.
+  } catch (err) {
+    console.error("Weather API error:", err);
+    throw err;
   }
-};
+}

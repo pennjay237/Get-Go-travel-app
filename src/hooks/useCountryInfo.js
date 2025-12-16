@@ -7,15 +7,14 @@ export default function useCountryInfo(destination) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!destination) return;
+    if (!destination || !destination.country) return;
 
-    const fetchCountryInfo = async () => {
+    const fetchCountry = async () => {
       setLoading(true);
       setError(null);
-
       try {
-        const data = await getCountryInfo(destination);
-        setLanguages(data?.languages || []);
+        const data = await getCountryInfo(destination.country);
+        setLanguages(data.languages || []);
       } catch (err) {
         console.error(err);
         setError("Failed to fetch country info");
@@ -24,7 +23,7 @@ export default function useCountryInfo(destination) {
       }
     };
 
-    fetchCountryInfo();
+    fetchCountry();
   }, [destination]);
 
   return { languages, loading, error };

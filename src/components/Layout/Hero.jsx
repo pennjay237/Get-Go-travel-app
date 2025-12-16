@@ -1,29 +1,23 @@
 import React from "react";
-
 export default function Hero() {
   return (
     <section
-      className="relative h-[70vh] flex items-center justify-center text-center text-white"
+      className="h-[60vh] flex items-center justify-center text-white bg-cover bg-center relative"
       style={{
         backgroundImage:
-          "url('https://images.unsplash.com/photo-1502920917128-1aa500764ce7')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+          "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e')",
       }}
     >
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/50"></div>
-
-      {/* Content */}
-      <div className="relative z-10 max-w-3xl px-6">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+      <div className="absolute inset-0 bg-black/50" />
+      <div className="relative z-10 text-center px-4">
+        <h1 className="text-4xl md:text-6xl font-bold mb-4">
           Plan Your Trip in One Place
         </h1>
-        <p className="text-lg md:text-xl text-gray-200">
-          Weather, attractions, currency, language & airports — all in one
-          search.
+        <p className="text-lg md:text-xl max-w-2xl mx-auto">
+          Weather, attractions, currency, language & airports — all in one app.
         </p>
       </div>
     </section>
   );
 }
+

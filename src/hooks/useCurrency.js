@@ -7,18 +7,17 @@ export default function useCurrency(destination) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!destination) return;
+    if (!destination || !destination.country) return;
 
     const fetchCurrency = async () => {
       setLoading(true);
       setError(null);
-
       try {
-        const data = await getCurrencyInfo(destination);
-        setCurrency(data || null);
+        const data = await getCurrencyInfo(destination.country);
+        setCurrency(data.currency);
       } catch (err) {
         console.error(err);
-        setError("Failed to fetch currency info");
+        setError("Failed to fetch currency");
       } finally {
         setLoading(false);
       }
@@ -29,4 +28,3 @@ export default function useCurrency(destination) {
 
   return { currency, loading, error };
 }
-

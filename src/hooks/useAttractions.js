@@ -7,14 +7,13 @@ export default function useAttractions(destination) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!destination) return;
+    if (!destination || !destination.name) return;
 
     const fetchAttractions = async () => {
       setLoading(true);
       setError(null);
-
       try {
-        const data = await getAttractionsByCity(destination);
+        const data = await getAttractionsByCity(destination.name);
         setAttractions(data || []);
       } catch (err) {
         console.error(err);

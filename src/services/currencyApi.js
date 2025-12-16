@@ -1,16 +1,9 @@
-import axios from "axios";
-
-export const getCurrencyInfo = async (currencyCode) => {
-  if (!currencyCode) return null;
-
-  try {
-    const response = await axios.get(`https://api.exchangerate.host/latest?base=${currencyCode}`);
-    return {
-      base: currencyCode,
-      rates: response.data.rates,
-    };
-  } catch (error) {
-    console.error("Currency API error:", error);
-    return null;
-  }
-};
+export async function getCurrencyInfo(countryCode) {
+  if (!countryCode) return {};
+  const res = await fetch(`https://restcountries.com/v3.1/alpha/${countryCode}`);
+  if (!res.ok) throw new Error("Currency API error");
+  const data = await res.json();
+  return {
+    currency: data[0]?.currencies ? Object.values(data[0].currencies)[0].name : null,
+  };
+}

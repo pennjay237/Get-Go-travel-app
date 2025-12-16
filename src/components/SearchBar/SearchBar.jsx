@@ -2,46 +2,28 @@ import React, { useState, useEffect, useRef } from "react";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 
-import WeatherCard from "../Weather/WeatherCard";
-import AttractionsList from "../Attractions/AttractionList";
-import CurrencyInfo from "../Currency/CurrencyInfo";
-import LanguageInfo from "../Languages/LanguageInfo";
-import AirportInfo from "../Airport/AirportInfo";
-
-import { getWeatherByCity } from "../../services/weatherApi";
-import { getAttractionsByCity } from "../../services/attractionApi";
-import { getCountryInfo } from "../../services/countryApi";
-import { getNearestAirport } from "../../services/airportApi";
-
 const GEOAPIFY_API_KEY = import.meta.env.VITE_GEOAPIFY_KEY;
 
-export default function SearchBar() {
+export default function SearchBar({ onSelectDestination }) {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
-
-  const [weather, setWeather] = useState(null);
-  const [attractions, setAttractions] = useState([]);
-  const [currency, setCurrency] = useState(null);
-  const [languages, setLanguages] = useState([]);
-  const [airport, setAirport] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const dropdownRef = useRef();
+  const dropdownRef = useRef(null);
 
   const fetchSuggestions = async (input) => {
     if (!input) return setSuggestions([]);
     try {
       const res = await fetch(
-        `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(input)}&apiKey=${GEOAPIFY_API_KEY}&limit=5`
+        `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(
+          input
+        )}&limit=5&apiKey=${GEOAPIFY_API_KEY}`
       );
       const data = await res.json();
       setSuggestions(data.features || []);
       setShowDropdown(true);
     } catch (err) {
-      console.error(err);
+      console.error("Geoapify error:", err);
     }
   };
 
@@ -50,42 +32,17 @@ export default function SearchBar() {
     fetchSuggestions(e.target.value);
   };
 
-  const fetchAllData = async (place) => {
-    if (!place) return;
-    setLoading(true);
-    setError(null);
-
-    try {
-      const cityName = place.properties.formatted;
-      const countryCode = place.properties.country;
-      const lat = place.properties.lat;
-      const lon = place.properties.lon;
-
-      const [w, a, c, airportData] = await Promise.all([
-        getWeatherByCity(cityName),
-        getAttractionsByCity(cityName),
-        getCountryInfo(countryCode),
-        getNearestAirport(lat, lon),
-      ]);
-
-      setWeather(w);
-      setAttractions(a);
-      setCurrency(c.currency);
-      setLanguages(c.languages);
-      setAirport(airportData);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to load data for this destination.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSelect = (place) => {
+    const destination = {
+      name: place.properties.formatted,
+      lat: place.properties.lat,
+      lon: place.properties.lon,
+      country: place.properties.country,
+    };
     setSelectedPlace(place);
     setQuery(place.properties.formatted);
     setShowDropdown(false);
-    fetchAllData(place);
+    onSelectDestination(destination);
   };
 
   useEffect(() => {
@@ -95,7 +52,8 @@ export default function SearchBar() {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -126,36 +84,26 @@ export default function SearchBar() {
       )}
 
       {selectedPlace && (
-        <>
-          <div className="mt-5 h-64 w-full rounded-lg overflow-hidden shadow-md">
-            <MapContainer
-              center={[selectedPlace.properties.lat, selectedPlace.properties.lon]}
-              zoom={14}
-              scrollWheelZoom={false}
-              className="h-full w-full"
-            >
-              <TileLayer
-                url={`https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_API_KEY}`}
-              />
-              <Marker position={[selectedPlace.properties.lat, selectedPlace.properties.lon]}>
-                <Popup>{selectedPlace.properties.formatted}</Popup>
-              </Marker>
-            </MapContainer>
-          </div>
-
-          <div className="mt-6 space-y-6">
-            <WeatherCard
-              weather={weather}
-              loading={loading}
-              error={error}
-              countryCode={selectedPlace.properties.country}
+        <div className="mt-5 h-64 w-full rounded-lg overflow-hidden shadow-md">
+          <MapContainer
+            center={[selectedPlace.properties.lat, selectedPlace.properties.lon]}
+            zoom={14}
+            scrollWheelZoom={false}
+            className="h-full w-full"
+          >
+            <TileLayer
+              url={`https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_API_KEY}`}
             />
-            <AttractionsList attractions={attractions} />
-            <CurrencyInfo currency={currency} />
-            <LanguageInfo languages={languages} />
-            <AirportInfo airport={airport} />
-          </div>
-        </>
+            <Marker
+              position={[
+                selectedPlace.properties.lat,
+                selectedPlace.properties.lon,
+              ]}
+            >
+              <Popup>{selectedPlace.properties.formatted}</Popup>
+            </Marker>
+          </MapContainer>
+        </div>
       )}
     </div>
   );

@@ -7,12 +7,11 @@ export default function useAirport(coords) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!coords) return;
+    if (!coords || !coords.lat || !coords.lon) return;
 
     const fetchAirport = async () => {
       setLoading(true);
       setError(null);
-
       try {
         const result = await getNearestAirport(coords.lat, coords.lon);
         setData(result);
