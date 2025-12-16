@@ -1,7 +1,12 @@
-export default function PageContainer({ children }) {
+import React from "react";
+
+const PageContainer = ({ children }) => {
   return (
-    <div className="pt-20 px-4 max-w-6xl mx-auto">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {children}
     </div>
   );
-}
+};
+
+export default PageContainer;
+

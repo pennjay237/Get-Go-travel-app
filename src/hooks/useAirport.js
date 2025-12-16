@@ -1,30 +1,31 @@
-import { useState, useEffect } from 'react'
-import { getNearestAirport } from '../services/airportApi'
+import { useState, useEffect } from "react";
+import { getNearestAirport } from "../services/airportApi";
 
-export const useAirport = (coordinates) => {
-  const [airport, setAirport] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+export default function useAirport(coords) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!coordinates) return
+    if (!coords) return;
 
     const fetchAirport = async () => {
-      setLoading(true)
-      setError(null)
-      
+      setLoading(true);
+      setError(null);
+
       try {
-        const data = await getNearestAirport(coordinates.lat, coordinates.lng)
-        setAirport(data)
+        const result = await getNearestAirport(coords.lat, coords.lon);
+        setData(result);
       } catch (err) {
-        setError(err.message)
+        console.error(err);
+        setError("Failed to fetch airport info");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchAirport()
-  }, [coordinates])
+    fetchAirport();
+  }, [coords]);
 
-  return { airport, loading, error }
+  return { data, loading, error };
 }

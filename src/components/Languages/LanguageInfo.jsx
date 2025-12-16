@@ -1,51 +1,21 @@
-import Loader from '../UI/Loader'
+import React from "react";
 
 const LanguageInfo = ({ languages, loading, error }) => {
-  if (loading) {
-    return <Loader message="Loading language information..." />
-  }
-
-  if (error || !languages || languages === 'N/A') {
-    return (
-      <div className="text-center py-4 text-gray-600">
-        Language information unavailable
-      </div>
-    )
-  }
-
-  const languageList = languages.split(', ')
+  if (loading) return <p className="p-4 text-center">Loading languages...</p>;
+  if (error) return <p className="p-4 text-center text-red-500">Failed to load languages</p>;
+  if (!languages || languages.length === 0)
+    return <p className="p-4 text-center text-gray-500">No language info available</p>;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center">
-        <span className="text-3xl mr-3">🗣️</span>
-        <div>
-          <div className="text-sm text-gray-600">Languages Spoken</div>
-          <div className="font-medium">{languageList.length} {languageList.length === 1 ? 'Language' : 'Languages'}</div>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        {languageList.map((language, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg"
-          >
-            <span className="font-medium">{language}</span>
-            {index === 0 && (
-              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                Primary
-              </span>
-            )}
-          </div>
+    <div className="bg-white shadow rounded-lg p-6">
+      <h3 className="text-xl font-semibold mb-2">Languages Spoken</h3>
+      <ul className="list-disc list-inside text-gray-700">
+        {languages.map((lang, idx) => (
+          <li key={idx}>{lang}</li>
         ))}
-      </div>
-
-      <div className="text-sm text-gray-500">
-        These are the official languages spoken at your destination.
-      </div>
+      </ul>
     </div>
-  )
-}
+  );
+};
 
-export default LanguageInfo
+export default LanguageInfo;

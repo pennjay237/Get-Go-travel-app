@@ -1,40 +1,31 @@
-import { useState, useEffect } from 'react'
-import { getAttractions } from '../services/attractionsApi'
+import { useState, useEffect } from "react";
+import { getAttractionsByCity } from "../services/attractionApi";
 
-export const useAttractions = (coordinates) => {
-  const [attractions, setAttractions] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [hasMore, setHasMore] = useState(true)
-
-  const loadMore = async () => {
-    if (!coordinates || loading) return
-    
-    setLoading(true)
-    try {
-      const newAttractions = await getAttractions(
-        coordinates.lat, 
-        coordinates.lng, 
-        attractions.length + 5
-      )
-      
-      if (newAttractions.length <= attractions.length) {
-        setHasMore(false)
-      }
-      
-      setAttractions(newAttractions)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+export default function useAttractions(destination) {
+  const [attractions, setAttractions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (coordinates) {
-      loadMore()
-    }
-  }, [coordinates])
+    if (!destination) return;
 
-  return { attractions, loading, error, hasMore, loadMore }
+    const fetchAttractions = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await getAttractionsByCity(destination);
+        setAttractions(data || []);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to fetch attractions");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAttractions();
+  }, [destination]);
+
+  return { attractions, loading, error };
 }

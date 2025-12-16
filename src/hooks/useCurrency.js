@@ -1,35 +1,32 @@
-import { useState, useEffect } from 'react'
-import { getExchangeRates, convertCurrency } from '../services/currencyApi'
+import { useState, useEffect } from "react";
+import { getCurrencyInfo } from "../services/currencyApi";
 
-export const useCurrency = (baseCurrency) => {
-  const [rates, setRates] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+export default function useCurrency(destination) {
+  const [currency, setCurrency] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!baseCurrency || baseCurrency === 'N/A') return
+    if (!destination) return;
 
-    const fetchRates = async () => {
-      setLoading(true)
-      setError(null)
-      
+    const fetchCurrency = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
-        const data = await getExchangeRates(baseCurrency)
-        setRates(data)
+        const data = await getCurrencyInfo(destination);
+        setCurrency(data || null);
       } catch (err) {
-        setError(err.message)
+        console.error(err);
+        setError("Failed to fetch currency info");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchRates()
-  }, [baseCurrency])
+    fetchCurrency();
+  }, [destination]);
 
-  const convert = (amount, fromCurrency, toCurrency) => {
-    if (!rates) return null
-    return convertCurrency(amount, fromCurrency, toCurrency, rates.rates)
-  }
-
-  return { rates, loading, error, convert }
+  return { currency, loading, error };
 }
+

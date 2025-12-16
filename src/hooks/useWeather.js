@@ -1,31 +1,33 @@
-import { useState, useEffect } from 'react'
-import { getWeatherData } from '../services/weatherApi'
+import { useState, useEffect } from "react";
+import { getWeatherByCity } from "../services/weatherApi";
 
-export const useWeather = (coordinates) => {
-  const [weather, setWeather] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+export default function useWeather(destination) {
+  const [weather, setWeather] = useState(null);
+  const [weeklyForecast, setWeeklyForecast] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!coordinates) return
+    if (!destination) return;
 
     const fetchWeather = async () => {
-      setLoading(true)
-      setError(null)
-      
+      setLoading(true);
+      setError(null);
+
       try {
-        const data = await getWeatherData(coordinates.lat, coordinates.lng)
-        setWeather(data)
+        const data = await getWeatherByCity(destination);
+        setWeather(data.current);
+        setWeeklyForecast(data.weekly || []);
       } catch (err) {
-        setError(err.message)
-        console.error('Error in useWeather:', err)
+        console.error(err);
+        setError("Failed to fetch weather");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchWeather()
-  }, [coordinates])
+    fetchWeather();
+  }, [destination]);
 
-  return { weather, loading, error }
+  return { weather, weeklyForecast, loading, error };
 }

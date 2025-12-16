@@ -1,42 +1,16 @@
-import { extractCurrencySymbol } from '../../utils/extractionCurrency'
-import Loader from '../UI/Loader'
+import React from "react";
 
-const CurrencyInfo = ({ currency, currencyName, loading, error }) => {
-  if (loading) {
-    return <Loader message="Loading currency info..." />
-  }
-
-  if (error || !currency || currency === 'N/A') {
-    return (
-      <div className="text-center py-4 text-gray-600">
-        Currency information unavailable
-      </div>
-    )
-  }
+const CurrencyInfo = ({ currencyData, loading, error }) => {
+  if (loading) return <p className="p-4 text-center">Loading currency info...</p>;
+  if (error) return <p className="p-4 text-center text-red-500">Failed to load currency info</p>;
+  if (!currencyData) return null;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-sm text-gray-600">Local Currency</div>
-          <div className="text-2xl font-bold text-gray-900">
-            {extractCurrencySymbol(currency)} ({currency})
-          </div>
-        </div>
-        <div className="text-3xl">💱</div>
-      </div>
-      
-      {currencyName && currencyName !== 'N/A' && (
-        <div className="text-gray-600">
-          <span className="font-medium">Currency Name:</span> {currencyName}
-        </div>
-      )}
-      
-      <div className="text-sm text-gray-500">
-        Exchange rates update daily. Use the calculator below for conversions.
-      </div>
+    <div className="bg-white shadow rounded-lg p-6 text-center">
+      <h2 className="text-xl font-semibold">Currency: {currencyData.base}</h2>
+      <p className="text-gray-600 mt-2">Updated: {currencyData.date}</p>
     </div>
-  )
-}
+  );
+};
 
-export default CurrencyInfo
+export default CurrencyInfo;

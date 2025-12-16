@@ -1,12 +1,12 @@
-const SectionWrapper = ({ title, children, className = '' }) => {
-  return (
-    <div className={`card ${className}`}>
-      {title && (
-        <h2 className="text-2xl font-bold mb-6">{title}</h2>
-      )}
-      {children}
-    </div>
-  )
-}
+import React from "react";
 
-export default SectionWrapper
+const SectionWrapper = ({ title, children }) => {
+  return (
+    <section className="my-8">
+      {title && <h2 className="text-2xl font-semibold mb-4">{title}</h2>}
+      <div>{children}</div>
+    </section>
+  );
+};
+
+export default SectionWrapper;

@@ -1,65 +1,18 @@
-import Loader from '../UI/Loader'
+import React from "react";
 
 const AirportInfo = ({ airport, loading, error }) => {
-  if (loading) {
-    return <Loader message="Finding nearest airport..." />
-  }
-
-  if (error || !airport) {
-    return (
-      <div className="text-center py-4 text-gray-600">
-        Airport information unavailable
-      </div>
-    )
-  }
+  if (loading) return <p className="p-4 text-center">Loading airport info...</p>;
+  if (error) return <p className="p-4 text-center text-red-500">Failed to load airport info</p>;
+  if (!airport) return <p className="p-4 text-center text-gray-500">No airport info available</p>;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center">
-        <span className="text-3xl mr-3">✈️</span>
-        <div>
-          <div className="text-sm text-gray-600">Nearest Airport</div>
-          <div className="text-lg font-bold text-gray-900">{airport.name}</div>
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        {airport.iata && airport.iata !== 'N/A' && (
-          <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
-            <span className="text-gray-600">IATA Code</span>
-            <span className="font-medium bg-white px-3 py-1 rounded-full border">
-              {airport.iata}
-            </span>
-          </div>
-        )}
-        
-        {airport.city && airport.city !== 'N/A' && (
-          <div className="flex justify-between">
-            <span className="text-gray-600">City</span>
-            <span className="font-medium">{airport.city}</span>
-          </div>
-        )}
-        
-        {airport.country && airport.country !== 'N/A' && (
-          <div className="flex justify-between">
-            <span className="text-gray-600">Country</span>
-            <span className="font-medium">{airport.country}</span>
-          </div>
-        )}
-        
-        {airport.distance && airport.distance !== 'N/A' && (
-          <div className="flex justify-between">
-            <span className="text-gray-600">Distance</span>
-            <span className="font-medium">{airport.distance} km</span>
-          </div>
-        )}
-      </div>
-
-      <div className="text-sm text-gray-500">
-        This is the closest major airport to your destination.
-      </div>
+    <div className="bg-white shadow rounded-lg p-6 text-center">
+      <h3 className="text-xl font-semibold mb-2">{airport.name}</h3>
+      <p className="text-gray-600">IATA: {airport.iata}</p>
+      <p className="text-gray-600">{airport.city}, {airport.country}</p>
+      <p className="text-gray-600 mt-2">{airport.details}</p>
     </div>
-  )
-}
+  );
+};
 
-export default AirportInfo
+export default AirportInfo;

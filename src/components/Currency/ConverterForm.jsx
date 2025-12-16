@@ -1,107 +1,42 @@
-import { useState, useEffect } from 'react'
-import { extractCurrencySymbol } from '../../utils/extractionCurrency'
+import React, { useState } from "react";
 
-const ConverterForm = ({ rates, convert, baseCurrency }) => {
-  const [amount, setAmount] = useState('100')
-  const [fromCurrency, setFromCurrency] = useState('USD')
-  const [toCurrency, setToCurrency] = useState(baseCurrency || 'EUR')
-  const [convertedAmount, setConvertedAmount] = useState(null)
+const ConverterForm = ({ rates, base }) => {
+  const [amount, setAmount] = useState(1);
+  const [target, setTarget] = useState(Object.keys(rates)[0]);
 
-  const popularCurrencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD']
+  if (!rates) return null;
 
-  useEffect(() => {
-    if (rates && amount && fromCurrency && toCurrency) {
-      const result = convert(parseFloat(amount), fromCurrency, toCurrency)
-      setConvertedAmount(result ? result.toFixed(2) : null)
-    }
-  }, [amount, fromCurrency, toCurrency, rates, convert])
+  const handleAmountChange = (e) => setAmount(e.target.value);
+  const handleTargetChange = (e) => setTarget(e.target.value);
+
+  const converted = (amount * rates[target]).toFixed(2);
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Currency Converter</h3>
-      
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Amount
-          </label>
-          <div className="flex">
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="input-field rounded-r-none"
-              placeholder="Enter amount"
-              min="0"
-              step="0.01"
-            />
-            <select
-              value={fromCurrency}
-              onChange={(e) => setFromCurrency(e.target.value)}
-              className="border border-gray-300 border-l-0 rounded-r-lg px-3 py-2 bg-gray-50"
-            >
-              {popularCurrencies.map((currency) => (
-                <option key={currency} value={currency}>
-                  {currency}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-center">
-          <button
-            onClick={() => {
-              const temp = fromCurrency
-              setFromCurrency(toCurrency)
-              setToCurrency(temp)
-            }}
-            className="p-2 text-gray-500 hover:text-gray-700"
-            title="Swap currencies"
-          >
-            ⇅
-          </button>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Convert to
-          </label>
-          <select
-            value={toCurrency}
-            onChange={(e) => setToCurrency(e.target.value)}
-            className="input-field"
-          >
-            {rates && Object.keys(rates.rates).map((currency) => (
-              <option key={currency} value={currency}>
-                {currency} - {extractCurrencySymbol(currency)}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {convertedAmount && (
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="text-center">
-              <div className="text-sm text-gray-600 mb-1">Converted Amount</div>
-              <div className="text-2xl font-bold text-gray-900">
-                {extractCurrencySymbol(toCurrency)} {convertedAmount}
-              </div>
-              <div className="text-sm text-gray-500 mt-1">
-                {amount} {fromCurrency} = {convertedAmount} {toCurrency}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {rates?.date && (
-          <div className="text-xs text-gray-500 text-center">
-            Exchange rates as of {rates.date}
-          </div>
-        )}
+    <div className="bg-white shadow rounded-lg p-6 mt-4">
+      <h3 className="font-semibold text-lg mb-2">Currency Converter</h3>
+      <div className="flex flex-col sm:flex-row gap-2 items-center">
+        <input
+          type="number"
+          value={amount}
+          onChange={handleAmountChange}
+          className="border p-2 rounded w-full sm:w-32"
+        />
+        <span>{base} →</span>
+        <select
+          value={target}
+          onChange={handleTargetChange}
+          className="border p-2 rounded"
+        >
+          {Object.keys(rates).map((cur) => (
+            <option key={cur} value={cur}>
+              {cur}
+            </option>
+          ))}
+        </select>
+        <span className="font-semibold text-lg">{converted}</span>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ConverterForm
+export default ConverterForm;
