@@ -1,4 +1,4 @@
-//unspash
+
 const UNSPLASH_KEY = import.meta.env.VITE_UNSPLASH_KEY;
 
 

@@ -1,4 +1,3 @@
-///useweather
 
 
 import { useState, useEffect } from "react";

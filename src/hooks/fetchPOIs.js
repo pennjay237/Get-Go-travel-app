@@ -1,5 +1,4 @@
 
-//fectpois
 
 export async function fetchPOIs(lat, lon, radius = 5000) {
 

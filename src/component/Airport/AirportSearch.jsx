@@ -39,26 +39,22 @@ export default function AirportSearch() {
     <section className="bg-white rounded-2xl shadow-lg p-6 space-y-4">
       <h2 className="text-2xl font-bold">Nearby Airports</h2>
 
-      {/* Loading */}
       {loading && (
         <p className="text-gray-500 animate-pulse">
           Loading airports…
         </p>
       )}
 
-      {/* Error */}
       {error && (
         <p className="text-red-600">{error}</p>
       )}
 
-      {/* Empty */}
       {!loading && !error && airports.length === 0 && (
         <p className="text-gray-500">
           No airports found in this area.
         </p>
       )}
 
-      {/* List */}
       <ul className="space-y-3">
         {airports.map((airport) => (
           <li

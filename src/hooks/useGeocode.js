@@ -1,4 +1,3 @@
-////usegeoapi
 
 import { useState } from "react";
 

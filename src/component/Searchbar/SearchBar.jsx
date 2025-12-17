@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchGeocode } from "../hooks/geoapify";
+import { fetchGeocode } from "../../hooks/geoapify";
 
-export default function SearchBar() {
+export default function SearchBar({ onSelectDestination }) {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  async function handleSearch(e) {
+  const handleSearch = async (e) => {
     e.preventDefault();
     if (!query.trim() || loading) return;
 
@@ -21,6 +21,16 @@ export default function SearchBar() {
       if (!result) {
         setError("Location not found. Try another city.");
         return;
+      }
+
+      if (onSelectDestination) {
+        onSelectDestination({
+          lat: result.lat,
+          lon: result.lon,
+          city: result.city,
+          country: result.country,
+          countryCode: result.countryCode,
+        });
       }
 
       navigate("/search", {
@@ -38,7 +48,7 @@ export default function SearchBar() {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="w-full max-w-xl mx-auto">
@@ -53,13 +63,15 @@ export default function SearchBar() {
           className="
             flex-1
             rounded-xl
-            border border-slate-300
+            border border-gray-300 dark:border-gray-700
             px-4 py-3
             text-sm
             focus:outline-none
             focus:ring-2
             focus:ring-blue-500
-            bg-white
+            bg-white dark:bg-gray-800
+            text-gray-900 dark:text-gray-100
+            transition-colors
           "
         />
 
@@ -71,11 +83,11 @@ export default function SearchBar() {
             px-6 py-3
             text-sm font-medium
             text-white
-            bg-blue-600
-            hover:bg-blue-700
+            bg-blue-600 hover:bg-blue-700
+            dark:bg-blue-500 dark:hover:bg-blue-600
             disabled:opacity-60
             disabled:cursor-not-allowed
-            transition
+            transition-colors
           "
         >
           {loading ? "Searching…" : "Search"}
@@ -83,7 +95,7 @@ export default function SearchBar() {
       </form>
 
       {error && (
-        <div className="mt-3 text-sm text-rose-600 bg-rose-50 rounded-lg px-4 py-2">
+        <div className="mt-3 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg px-4 py-2 transition-colors">
           {error}
         </div>
       )}

@@ -1,4 +1,3 @@
-////useaieport
 
 export async function fetchNearestAirport(lat, lon, countryCode, limit = 5, radius = 150000) {
   try {
