@@ -1,29 +1,37 @@
-import { useState, useEffect } from "react";
-import { getWeatherByCity } from "../services/weatherApi";
+///useweather
 
-export default function useWeather(destination) {
-  const [weather, setWeather] = useState(null);
-  const [loading, setLoading] = useState(false);
+
+import { useState, useEffect } from "react";
+
+export default function useWeather(lat, lon) {
+  const [status, setStatus] = useState("loading");
+  const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!destination?.name) return;
+    if (!lat || !lon) return;
 
-    const fetchWeather = async () => {
-      setLoading(true);
-      setError(null);
+    async function fetchWeather() {
       try {
-        const data = await getWeatherByCity(destination.name);
-        setWeather(data);
+        setStatus("loading");
+
+        const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
+        const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${lat},${lon}&aqi=no`;
+
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Failed to fetch weather");
+
+        const json = await res.json();
+        setData(json); 
+        setStatus("success");
       } catch (err) {
-        setError("Failed to fetch weather info");
-      } finally {
-        setLoading(false);
+        setError(err);
+        setStatus("error");
       }
-    };
+    }
 
     fetchWeather();
-  }, [destination]);
+  }, [lat, lon]);
 
-  return { weather, loading, error };
+  return { status, data, error };
 }

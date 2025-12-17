@@ -1,30 +1,42 @@
-import { useState, useEffect } from "react";
-import { getNearestAirport } from "../services/airportApi";
+////useaieport
 
-export default function useAirport(coords) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+export async function fetchNearestAirport(lat, lon, countryCode, limit = 5, radius = 150000) {
+  try {
+    if (!lat || !lon) return [];
 
-  useEffect(() => {
-    if (!coords || !coords.lat || !coords.lon) return;
+    const safeLimit = Math.min(limit, 500);
+    
 
-    const fetchAirport = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const result = await getNearestAirport(coords.lat, coords.lon);
-        setData(result);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to fetch airport info");
-      } finally {
-        setLoading(false);
-      }
-    };
+    let filter = `circle:${lon},${lat},${radius}`;
+    if (countryCode) {
+      filter += `|countrycode:${countryCode.toUpperCase()}`;
+    }
 
-    fetchAirport();
-  }, [coords]);
+    const url = `https://api.geoapify.com/v2/places?categories=transport.airport&filter=${filter}&limit=${safeLimit}&apiKey=${API_KEY}`;
 
-  return { data, loading, error };
+    const res = await fetch(url);
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Geoapify error: ${res.status} ${text}`);
+    }
+
+    const data = await res.json();
+
+    return (data.features || []).map((a) => {
+      const p = a.properties;
+      return {
+        id: p.place_id,
+        name: p.name || "Unnamed Airport",
+        iata: p.iata || "N/A",
+        icao: p.icao || "N/A",
+        lat: p.lat,
+        lon: p.lon,
+        distance: Math.round(p.distance || 0),
+      };
+    });
+  } catch (err) {
+    console.error("Airport fetch failed:", err);
+    return [];
+  }
 }

@@ -1,30 +1,12 @@
-import { useState, useEffect } from "react";
-import { getAttractionsByCity } from "../services/attractionApi";
+//useattactions.js
 
-export default function useAttractions(destination) {
-  const [attractions, setAttractions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+export async function fetchAttractions(lat, lon) {
+  const API = import.meta.env.VITE_GEOAPIFY_KEY;
 
-  useEffect(() => {
-    if (!destination || !destination.name) return;
+  const url = `https://api.geoapify.com/v2/places?categories=tourism.attraction&filter=circle:${lon},${lat},5000&apiKey=${API}`;
 
-    const fetchAttractions = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await getAttractionsByCity(destination.name);
-        setAttractions(data || []);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to fetch attractions");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const res = await fetch(url);
+  const data = await res.json();
 
-    fetchAttractions();
-  }, [destination]);
-
-  return { attractions, loading, error };
+  return data.features;
 }
