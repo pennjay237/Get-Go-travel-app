@@ -194,8 +194,6 @@ export default function SearchResults() {
           <p className="mb-4">Your travel companion for discovering the world</p>
           <div className="flex justify-center gap-6 mb-4 text-sm">
             <a href="/" className="hover:text-blue-400 transition-colors">Home</a>
-            <a href="/search" className="hover:text-blue-400 transition-colors">Search</a>
-            <a href="/about" className="hover:text-blue-400 transition-colors">About</a>
           </div>
           <p className="text-sm text-gray-400">© 2025 GetGo. All rights reserved.</p>
         </div>

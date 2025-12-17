@@ -78,19 +78,19 @@ export default function Home() {
             {[
               {
                 title: "Attractions",
-                description: "Find popular tourist spots and activities near your destination.",
+                description: "Search popular tourist attractions in your dream city.",
                 icon: "📍",
                 gradient: "from-green-500 to-emerald-500"
               },
               {
                 title: "Weather",
-                description: "Get real-time weather updates before you travel.",
+                description: "Get accurate wether informations about your dream city.",
                 icon: "🌤️",
                 gradient: "from-blue-500 to-cyan-500"
               },
               {
                 title: "Airports",
-                description: "Locate the nearest airports and plan smarter routes.",
+                description: "Get suggestions of the nearest airport in your dream city.",
                 icon: "✈️",
                 gradient: "from-purple-500 to-pink-500"
               },
